@@ -38,8 +38,14 @@ def orderFolder(apath, level):
                 fileSrcName = Path(aFile).name
                 auxSrcFile = path.join(apath,fileSrcName)
                 auxdestFile = path.join(realFolderName,fileSrcName)
-                copyfile(auxSrcFile,auxdestFile)
-                remove(auxSrcFile)
+                try:
+                    copyfile(auxSrcFile,auxdestFile)
+                    remove(auxSrcFile)
+                except PermissionError as pe:
+                    print("Permission denied on file "+auxSrcFile+"\n"+str(pe));
+                except Exception as e:
+                    print("Unknown Exception on file"+auxSrcFile+"\n"+str(e))
+                    
 
 
 #comprobamos que, minimo tiene que venir un argumento
