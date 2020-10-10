@@ -7,9 +7,9 @@ from shutil import copyfile
 from pathlib import Path
 
 # USAGE
-# ordenarFicherosMasivo.py path [niveles]
+# ordenarFicherosMasivo.py path [levels]
 # path: directorio sobre el que se quiere realizar la ordenación
-# niveles: niveles de ordenación que se crearan. Por defecto 1
+# levels: niveles de ordenación que se crearan. Por defecto 1
 
 # Definimos el array que usaremos para iterar en la creación de carpetas
 
@@ -54,16 +54,16 @@ if len(argv) <=1:
     exit(1)
 else:
     mypath = argv[1]
-    niveles = 1
+    levels = 1
     if len(argv) == 3:
         if not argv[2].isnumeric():
             print ("Deep argument must be numeric")
             exit(3)
-        niveles = int(argv[2])
-        if niveles > 3:
+        levels = int(argv[2])
+        if levels > 3:
             print ("Too many deep")
             exit(4)
-        elif niveles < 1:
+        elif levels < 1:
             print ("Min deep must be 1")
             exit(5)
 
@@ -73,14 +73,14 @@ else:
     else:
         mytime = asctime(localtime(time()) )
         print ("Script starts at: "+mytime)
-        vueltas  = 0
+        loops  = 0
         arrPath = [mypath]
         auxArrPath = []        
-        while vueltas < niveles:
+        while loops < levels:
             # hacemos los path
             
             for folder in arrPath:  
-                orderFolder(folder, vueltas)
+                orderFolder(folder, loops)
                 numericDone = False
                 for letter in folderIterator:
                     if letter in specialChars:
@@ -93,7 +93,7 @@ else:
                     auxArrPath.append(path.join(folder, char))
             arrPath = auxArrPath
             auxArrPath = []   
-            vueltas = vueltas +1  
+            loops = loops +1  
         mytime = asctime(localtime(time()))
         print ("Script ends at: "+mytime)
         exit(0)
