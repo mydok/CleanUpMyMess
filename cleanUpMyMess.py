@@ -10,6 +10,7 @@ from pathlib import Path
 # ordenarFicherosMasivo.py path [levels]
 # path: directorio sobre el que se quiere realizar la ordenación
 # levels: niveles de ordenación que se crearan. Por defecto 1
+# startAt: caracter del nombre por el cual empezará la busqueda. Por defecto 0
 
 # Definimos el array que usaremos para iterar en la creación de carpetas
 
@@ -17,7 +18,7 @@ specialChars = [',','\'','=','.','-','_',' ','0','1','2','3','4','5','6','7','8'
 folderIterator = specialChars.copy() + ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
 
 
-def orderFolder(apath, level):
+def orderFolder(apath, level, startAt=0):
     
     # Creamos las carpetas
     for folderName in folderIterator:
@@ -27,7 +28,7 @@ def orderFolder(apath, level):
         else:
             char = folderName
         realFolderName = path.join(apath,char)
-        files = glob(apath+path.sep+folderName.rjust(level+1,'?')+'*')
+        files = glob(apath+path.sep+folderName.rjust(level+startAt+1,'?')+'*')
 
         if len(files) > 0:                
             if not path.exists(realFolderName):
@@ -55,7 +56,8 @@ if len(argv) <=1:
 else:
     mypath = argv[1]
     levels = 1
-    if len(argv) == 3:
+    forceLevelNo = 0
+    if len(argv) >= 3:
         if not argv[2].isnumeric():
             print ("Deep argument must be numeric")
             exit(3)
@@ -66,6 +68,14 @@ else:
         elif levels < 1:
             print ("Min deep must be 1")
             exit(5)
+    if len(argv) >= 4:
+        if not argv[3].isnumeric():
+            print ("Start char argument must be numeric")
+            exit(6)
+        if int(argv[3]) < 1 and int(argv[3]) > 3:
+            print ("Start char argument must be between 1 and 3")
+            exit(7)        
+        forceLevelNo = int(argv[2])
 
     if path.exists(mypath) == False:
         print("Invalid path")
@@ -80,7 +90,7 @@ else:
             # hacemos los path
             
             for folder in arrPath:  
-                orderFolder(folder, loops)
+                orderFolder(folder, loops, forceLevelNo)
                 numericDone = False
                 for letter in folderIterator:
                     if letter in specialChars:
