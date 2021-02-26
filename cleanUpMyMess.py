@@ -3,7 +3,7 @@ from sys import exit, argv
 from os import path, makedirs, remove
 from glob import glob
 from pprint import pprint
-from shutil import copyfile
+from shutil import copyfile, move
 from pathlib import Path
 
 # USAGE
@@ -17,20 +17,36 @@ from pathlib import Path
 specialChars = [',','\'','=','.','-','_',' ','0','1','2','3','4','5','6','7','8','9']
 folderIterator = specialChars.copy() + ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
 
-
-def orderFolder(apath, level, startAt=0):
+def getSublevelPath(level, char, apath):
+    finalFolder = ''
+    # Comprobamos si es el primer nivel. Si no lo es, concatenamos los nombres de
+    # las carpetas padres
+    if level > 0:                
+        loop = level
+        
+        apathList = apath.split(path.sep)
+        apathList.reverse()
     
+        finalFolder += apathList[0]                  
+        
+    finalFolder += char      
+    return finalFolder
+
+def orderFolder(apath, level, startAt=0):  
+
     # Creamos las carpetas
-    for folderName in folderIterator:
+    for folderName in folderIterator:  
         
         if folderName in specialChars:
             char = '#'
         else:
             char = folderName
-        realFolderName = path.join(apath,char)
+        
         files = glob(apath+path.sep+folderName.rjust(level+startAt+1,'?')+'*')
 
-        if len(files) > 0:                
+        if len(files) > 0:    
+            finalFolder = getSublevelPath(level,char,apath)
+            realFolderName = path.join(apath,finalFolder)
             if not path.exists(realFolderName):
                 makedirs(realFolderName)
             for aFile in files:
@@ -40,10 +56,11 @@ def orderFolder(apath, level, startAt=0):
                 auxSrcFile = path.join(apath,fileSrcName)
                 auxdestFile = path.join(realFolderName,fileSrcName)
                 try:
-                    copyfile(auxSrcFile,auxdestFile)
-                    remove(auxSrcFile)
+                    #copyfile(auxSrcFile,auxdestFile)
+                    #remove(auxSrcFile)
+                    move(auxSrcFile,auxdestFile)
                 except PermissionError as pe:
-                    print("Permission denied on file "+auxSrcFile+"\n"+str(pe));
+                    print("Permission denied on file "+auxSrcFile+"\n"+str(pe))
                 except Exception as e:
                     print("Unknown Exception on file"+auxSrcFile+"\n"+str(e))
                     
@@ -100,6 +117,7 @@ else:
                             continue
                     else:
                         char = letter
+                    char = getSublevelPath(loops,char,folder)
                     auxArrPath.append(path.join(folder, char))
             arrPath = auxArrPath
             auxArrPath = []   
